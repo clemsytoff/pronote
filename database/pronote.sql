@@ -7,3 +7,8 @@ CREATE TABLE users (
     account_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     grade INT NOT NULL
 );
+
+CREATE TABLE devoirs (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    
+)
