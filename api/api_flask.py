@@ -64,7 +64,7 @@ def get_users():
 
 
 
-# a ajouter : edit user, suppr user
+# a ajouter : edit user, suppr user, liste user par id
 
 
 
