@@ -47,7 +47,19 @@ def create_user():
 def get_users():
     cursor.execute("SELECT * FROM users")
     data = cursor.fetchall()
-    users = [{"id": row[0], "name": row[1], "surname": row[2], "classe": row[3], "account_creation": row[5], "grade": row[6]} for row in data]
+
+    users = [
+        {
+            "id": row[0],
+            "name": row[1],
+            "surname": row[2],
+            "classe": row[3],
+            "account_creation": row[5],
+            "grade": row[6]
+        }
+        for row in data
+    ]
+
     return jsonify(users)
 
 
@@ -100,8 +112,122 @@ JOIN users ON devoirs.user_id = users.id
 JOIN matieres ON devoirs.matiere_id = matieres.id;
     """)
     data = cursor.fetchall()
-    homeworks = [{"title": row[0], "description": row[1], "due_date": row[2], "prof_name": row[3], "prof_surname": row[4], "matiere":row[5]} for row in data]
+
+    homeworks = [
+        {
+            "title": row[0],
+            "description": row[1],
+            "due_date": row[2],
+            "prof_name": row[3],
+            "prof_surname": row[4],
+            "matiere": row[5]
+        }
+        for row in data
+    ]
+
     return jsonify(homeworks)
+
+# Liste des devoirs par matière
+@app.route("/api/v1/public/homeworks/<int:id>", methods=["GET"])
+def get_homeworks_by_matiere(id):
+    cursor.execute("""
+    SELECT 
+        devoirs.title, 
+        devoirs.description, 
+        devoirs.due_date, 
+        users.name AS prof_nom, 
+        users.surname AS prof_prenom,
+        matieres.name AS matiere
+    FROM devoirs
+    JOIN users ON devoirs.user_id = users.id
+    JOIN matieres ON devoirs.matiere_id = matieres.id
+    WHERE matieres.id = %s;
+    """, (id,))
+    data = cursor.fetchall()
+    homeworks = [{
+        "title": row[0],
+        "description": row[1],
+        "due_date": row[2],
+        "prof_name": row[3],
+        "prof_surname": row[4],
+        "matiere": row[5]
+    } for row in data]
+    return jsonify(homeworks)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
