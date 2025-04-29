@@ -52,6 +52,48 @@ def get_users():
 
 
 
+#creer un devoir
+@app.route("/api/v1/public/create_homework", methods=["POST"])
+def add_homework():
+    data = request.json
+    title = data.get("title")
+    description = data.get("description")
+    due_date = data.get("due_date")
+    user_id = data.get("user_id")
+    matiere_id = data.get("matiere_id")
+
+    #verifs
+    if not title or not description or not due_date or not user_id or not matiere_id:
+        return jsonify({"error": "Veuillez remplir tous les champs"}), 400
+    #verif de longueur
+    if not 0<len(title)<=255:
+        return jsonify({"error": "Veuillez respecter la taille des champs"}), 400
+    
+    #ajout à la db
+    cursor.execute("INSERT INTO devoirs (title,description,due_date,user_id,matiere_id) VALUES (%s,%s,%s,%s,%s)", (title,description,due_date,user_id,matiere_id,))
+    db.commit()
+    return jsonify({"message": "Devoirs ajouté avec succès"}), 201
+
+@app.route("/api/v1/public/homeworks", methods=["GET"])
+def get_homeworks():
+    cursor.execute("""
+SELECT 
+    devoirs.title, 
+    devoirs.description, 
+    devoirs.due_date, 
+    users.name AS prof_nom, 
+    users.surname AS prof_prenom,
+    matieres.name AS matiere
+FROM devoirs
+JOIN users ON devoirs.user_id = users.id
+JOIN matieres ON devoirs.matiere_id = matieres.id;
+    """)
+    data = cursor.fetchall()
+    homeworks = [{"title": row[0], "description": row[1], "due_date": row[2], "prof_name": row[3], "prof_surname": row[4], "matiere":row[5]} for row in data]
+    return jsonify(homeworks)
+
+
+
 
 
 
