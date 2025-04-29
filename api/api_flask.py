@@ -64,7 +64,7 @@ def get_users():
 
 
 
-
+# a ajouter : edit user, suppr user
 
 
 
@@ -156,9 +156,48 @@ def get_homeworks_by_matiere(id):
 
 
 
+# a ajouter : edit devoirs, suppr devoirs
 
 
 
+
+#---------------------------------------------------------------------------MATIERES------------------------------------------------------
+
+
+#ajout matière
+@app.route("/api/v1/admin/create_matiere", methods=["POST"])
+def create_matiere():
+    data = request.json
+    name = data.get("name")
+    #vérifications
+
+    if not name:
+        return jsonify({"error": "Veuillez remplir tous les champs"}), 400
+    #verif longueurs
+    if not 0<len(name)<=100:
+        return jsonify({"error": "Veuillez respecter la longueur de chaque champ"}), 400
+    
+    #ajout à la db
+    cursor.execute("INSERT INTO matieres (name) VALUES (%s)", (name,))
+    db.commit()
+    return jsonify({"message": "Matière créée avec succès"}), 201
+
+
+
+#suppression matière
+@app.route("/api/v1/admin/delete_matiere/<int:matiere_id>", methods=["DELETE"])
+def delete_matiere(matiere_id):
+    cursor.execute("DELETE FROM matieres WHERE id = %s", (matiere_id,))
+    db.commit()
+    return jsonify({"message": "Matière supprimée avec succès"})
+
+
+
+
+#liste matières
+
+
+# à ajouter : edit matière
 
 
 
