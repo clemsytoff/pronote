@@ -70,7 +70,7 @@ def get_users():
 
 
 
-#---------------------------------------------------------------------------HOMEWORKS------------------------------------------------------
+#---------------------------------------------------------------------------DEVOIRS------------------------------------------------------
 
 #creer un devoir
 @app.route("/api/v1/public/create_homework", methods=["POST"])
@@ -213,14 +213,112 @@ FROM matieres
 
     return jsonify(matieres)
 
+
 # à ajouter : edit matière
 
 
 
 
 
+#---------------------------------------------------------------------------MESSAGES------------------------------------------------------
 
 
+#créer un message
+
+@app.route("/api/v1/public/create_message", methods=["POST"])
+def add_message():
+    data = request.json
+    sender_id = data.get("sender_id")
+    receiver_id = data.get("receiver_id")
+    subject = data.get("subject")
+    body = data.get("body")
+    
+    #verifs
+    if not sender_id or not receiver_id or not subject or not body:
+        return jsonify({"error": "Veuillez remplir tous les champs"}), 400
+    #verif longueur
+    if not 0<len(subject)<=255:
+        return jsonify({"error": "Veuillez respecter la longueur des champs"}), 400
+    #ajout à la db
+    cursor.execute("INSERT INTO messages (sender_id,receiver_id,subject,body) VALUES (%s,%s,%s,%s)", (sender_id,receiver_id,subject,body,))
+    db.commit()
+    return jsonify({"message": "Message créé (envoyé) avec succès"}), 201
+
+
+#liste de tous les messages
+@app.route("/api/v1/admin/list_messages", methods=["GET"])
+def list_messages():
+    cursor.execute("""
+SELECT *
+FROM messages
+    """)
+    data = cursor.fetchall()
+
+    messages = [
+        {
+            "id": row[0],
+            "sender_id": row[1],
+            "receiver_id": row[2],
+            "subject": row[3],
+            "body": row[4],
+            "send_at": row[5]
+        }
+        for row in data
+    ]
+
+    return jsonify(messages)
+
+
+#liste messages par envoyeur
+@app.route("/api/v1/admin/list_messages/<int:sender_id>", methods=["GET"])
+def list_messages_by_sender(sender_id):
+    cursor.execute("""
+SELECT *
+FROM messages
+WHERE sender_id = %s
+    """,(sender_id,))
+    data = cursor.fetchall()
+
+    messages = [
+        {
+            "id": row[0],
+            "sender_id": row[1],
+            "receiver_id": row[2],
+            "subject": row[3],
+            "body": row[4],
+            "send_at": row[5]
+        }
+        for row in data
+    ]
+
+    return jsonify(messages)
+
+
+
+
+#liste messages par destinataire
+@app.route("/api/v1/admin/list_messages/<int:receiver_id>", methods=["GET"])
+def list_messages_by_receiver(receiver_id):
+    cursor.execute("""
+SELECT *
+FROM messages
+WHERE receiver_id = %s
+    """,(receiver_id,))
+    data = cursor.fetchall()
+
+    messages = [
+        {
+            "id": row[0],
+            "sender_id": row[1],
+            "receiver_id": row[2],
+            "subject": row[3],
+            "body": row[4],
+            "send_at": row[5]
+        }
+        for row in data
+    ]
+
+    return jsonify(messages)
 
 
 
