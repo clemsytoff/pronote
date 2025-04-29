@@ -16,6 +16,7 @@ db = mysql.connector.connect(
 
 cursor = db.cursor()
 
+#---------------------------------------------------------------------------USERS------------------------------------------------------
 
 #créer un utilisateur
 @app.route("/api/v1/public/create_user", methods=["POST"])
@@ -52,6 +53,13 @@ def get_users():
 
 
 
+
+
+
+
+
+#---------------------------------------------------------------------------HOMEWORKS------------------------------------------------------
+
 #creer un devoir
 @app.route("/api/v1/public/create_homework", methods=["POST"])
 def add_homework():
@@ -74,6 +82,9 @@ def add_homework():
     db.commit()
     return jsonify({"message": "Devoirs ajouté avec succès"}), 201
 
+
+
+#liste de tous les devoirs
 @app.route("/api/v1/public/homeworks", methods=["GET"])
 def get_homeworks():
     cursor.execute("""
