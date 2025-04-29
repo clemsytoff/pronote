@@ -195,7 +195,23 @@ def delete_matiere(matiere_id):
 
 
 #liste matières
+@app.route("/api/v1/admin/list_matieres", methods=["GET"])
+def list_matieres():
+    cursor.execute("""
+SELECT *
+FROM matieres
+    """)
+    data = cursor.fetchall()
 
+    matieres = [
+        {
+            "id": row[0],
+            "name": row[1]
+        }
+        for row in data
+    ]
+
+    return jsonify(matieres)
 
 # à ajouter : edit matière
 
