@@ -98,6 +98,12 @@ def get_users():
     return jsonify(users)
 
 
+@app.route("/api/v1/admin/users/delete/<int:user_id>", methods=["DELETE"])
+def delete_cuser(user_id):
+    cursor.execute("DELETE FROM users WHERE id = %s", (user_id,))
+    db.commit()
+    return jsonify({"message": "Utilisateur supprimé avec succès"})
+
 
 # a ajouter : edit user, suppr user, liste user par id
 
@@ -108,7 +114,7 @@ def get_users():
 #---------------------------------------------------------------------------DEVOIRS------------------------------------------------------
 
 #creer un devoir
-@app.route("/api/v1/public/homeworks/create", methods=["POST"])
+@app.route("/api/v1/prof/homeworks/create", methods=["POST"])
 def add_homework():
     data = request.json
     title = data.get("title")
@@ -132,7 +138,7 @@ def add_homework():
 
 
 #liste de tous les devoirs
-@app.route("/api/v1/public/homeworks/all", methods=["GET"])
+@app.route("/api/v1/prof/homeworks/all", methods=["GET"])
 def get_homeworks():
     cursor.execute("""
 SELECT 
@@ -163,7 +169,7 @@ JOIN matieres ON devoirs.matiere_id = matieres.id;
     return jsonify(homeworks)
 
 # Liste des devoirs par matière
-@app.route("/api/v1/public/homeworks/list/<int:id>", methods=["GET"])
+@app.route("/api/v1/prof/homeworks/list/<int:id>", methods=["GET"])
 def get_homeworks_by_matiere(id):
     cursor.execute("""
     SELECT 
@@ -191,7 +197,7 @@ def get_homeworks_by_matiere(id):
 
 
 
-#ajouter modif devoirs
+#ajouter modif devoirs et suppr
 
 
 
@@ -369,10 +375,67 @@ WHERE receiver_id = %s
 
 
 
+#---------------------------------------------------------------------------NOTES------------------------------------------------------
 
 
 
+#créer une note
+@app.route("/api/v1/prof/notes/create", methods=["POST"])
+def add_note():
+    data = request.json
+    user_id = data.get("user_id")
+    matiere_id = data.get("matiere_id")
+    note_value = data.get("note_value")
+    note_name = data.get("note_name")
 
+    #verifs
+    if not user_id or not matiere_id or not note_value or not note_name:
+        return jsonify({"error": "Veuillez remplir tous les champs"}), 400
+    #verif longueurs
+    if not 0<int(len(note_name))<=100:
+        return jsonify({"error": "Veuillez respecter la longueur des champs"}), 400
+    if not 0<=note_value<=20: #on prend en charge que les notes / 20
+        return jsonify({"error": "La note doit être comprise en 0 et 20"}), 400
+
+    #ajout à la db
+    cursor.execute("INSERT INTO notes (user_id,matiere_id,note_value,note_name) VALUES (%s,%s,%s,%s)", (user_id,matiere_id,note_value,note_name,))
+    db.commit()
+    return jsonify({"message": "Note ajoutée avec succès"}), 201
+
+
+
+#list toutes les notes
+@app.route("/api/v1/prof/notes/all", methods=["GET"])
+def get_notes():
+    cursor.execute("SELECT * FROM notes")
+    data = cursor.fetchall()
+    notes = [{"id": row[0], "user_id": row[1], "note_name": row[2], "matiere_id": row[3], "note_value": row[4], "note_date": row[5]} for row in data]
+    return jsonify(notes)
+
+
+#list notes par id (élève)
+@app.route("/api/v1/prof/notes/user/<int:user_id>", methods=["GET"])
+def get_notes_by_id_user(user_id):
+    cursor.execute("SELECT * FROM notes WHERE user_id = %s", (user_id,))
+    data = cursor.fetchall()
+    notes = [{"id": row[0], "user_id": row[1], "note_name": row[2], "matiere_id": row[3], "note_value": row[4], "note_date": row[5]} for row in data]
+    return jsonify(notes)
+
+#list notes par matiere
+@app.route("/api/v1/prof/notes/matiere/<int:matiere_id>", methods=["GET"])
+def get_notes_by_id_matiere(matiere_id):
+    cursor.execute("SELECT * FROM notes WHERE matiere_id = %s", (matiere_id,))
+    data = cursor.fetchall()
+    notes = [{"id": row[0], "user_id": row[1], "note_name": row[2], "matiere_id": row[3], "note_value": row[4], "note_date": row[5]} for row in data]
+    return jsonify(notes)
+
+@app.route("/api/v1/prof/notes/delete/<int:note_id>", methods=["DELETE"])
+def delete_note(note_id):
+    cursor.execute("DELETE FROM notes WHERE id = %s", (note_id,))
+    db.commit()
+    return jsonify({"message": "Note supprimée avec succès"})
+
+#a faire : edit note
 
 
 

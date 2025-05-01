@@ -34,3 +34,16 @@ CREATE TABLE messages (
     FOREIGN KEY (sender_id) REFERENCES users(id),
     FOREIGN KEY (receiver_id) REFERENCES users(id)
 );
+
+--A VERIF
+
+CREATE TABLE notes (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    note_name VARCHAR(100) NOT NULL,
+    matiere_id INT NOT NULL,
+    note_value FLOAT NOT NULL,
+    note_date  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (matiere_id) REFERENCES matieres(id)
+);
