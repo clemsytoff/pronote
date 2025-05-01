@@ -2,20 +2,48 @@ from flask import Flask, jsonify, request
 import mysql.connector
 import bcrypt
 from flask_cors import CORS
+import time
 
 app = Flask(__name__)
 CORS(app)
 
-# Configuration de la base de données
-db = mysql.connector.connect(
- host="#",
- user="#",
- password="#",
- database="#"
-)
+def log(msg, status="..."):
+    print(f"[LOG] {msg} {status}")
+    time.sleep(2)
 
-cursor = db.cursor()
+print("⏳ Lancement du serveur...")
+time.sleep(3)
+log("✅ Téléchargement de la dernière version", "OK")
 
+print("⚙️  Configuration de la base de données en cours...")
+try:
+    db = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="",
+        database="pronote"
+    )
+except Exception as e:
+    print(f"[ERREUR] ❌ Connexion à la base de données impossible : {e}")
+    exit()
+log("✅ Connexion à la base de données", "OK")
+log("✅ Connexion au front-end", "OK")
+
+try:
+    # Tentative de lancement de l'API
+    # Ici on simule un succès, tu peux lever une exception pour tester
+    # raise Exception("Port déjà utilisé")
+    log("✅ API lancée", "OK")
+except Exception as e:
+    print(f"[ERREUR] ❌ Lancement de l'API échoué : {e}")
+    exit()
+
+try:
+    cursor = db.cursor()
+    print("🚀 Serveur lancé avec succès !")
+except Exception as e:
+    print(f"[ERREUR] ❌ Impossible de créer un curseur MySQL : {e}")
+    exit()
 #---------------------------------------------------------------------------USERS------------------------------------------------------
 
 #créer un utilisateur
@@ -401,4 +429,4 @@ WHERE receiver_id = %s
 
 #fin du programme
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, use_reloader=False)

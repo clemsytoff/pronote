@@ -7,6 +7,12 @@ CREATE TABLE users (
     account_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     grade INT NOT NULL
 );
+
+CREATE TABLE matieres (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL
+);
+
 CREATE TABLE devoirs (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
@@ -16,11 +22,6 @@ CREATE TABLE devoirs (
     matiere_id INT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (matiere_id) REFERENCES matieres(id)
-);
-
-CREATE TABLE matieres (
-    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE messages (
