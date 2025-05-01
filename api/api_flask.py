@@ -67,7 +67,7 @@ def create_user():
         return jsonify({"error": "Veuillez remplir tous les champs"}), 400
     
     #verif longueurs
-    if not 0<len(name)<=100 or not 0<len(surname)<=100 or not 0<len(classe)<=50 or not 0<len(password)<=255:
+    if not 0<int(len(name))<=100 or not 0<int(len(surname))<=100 or not 0<int(len(classe))<=50 or not 0<len(password)<=255:
         return jsonify({"error": "Veuillez respecter la longueur de chaque champ"}), 400
     
     #hash du mdp
@@ -121,7 +121,7 @@ def add_homework():
     if not title or not description or not due_date or not user_id or not matiere_id:
         return jsonify({"error": "Veuillez remplir tous les champs"}), 400
     #verif de longueur
-    if not 0<len(title)<=255:
+    if not 0<int(len(title))<=255:
         return jsonify({"error": "Veuillez respecter la taille des champs"}), 400
     
     #ajout à la db
@@ -210,7 +210,7 @@ def create_matiere():
     if not name:
         return jsonify({"error": "Veuillez remplir tous les champs"}), 400
     #verif longueurs
-    if not 0<len(name)<=100:
+    if not 0<int(len(name))<=100:
         return jsonify({"error": "Veuillez respecter la longueur de chaque champ"}), 400
     
     #ajout à la db
@@ -282,7 +282,7 @@ def add_message():
     if not sender_id or not receiver_id or not subject or not body:
         return jsonify({"error": "Veuillez remplir tous les champs"}), 400
     #verif longueur
-    if not 0<len(subject)<=255:
+    if not 0<int(len(subject))<=255:
         return jsonify({"error": "Veuillez respecter la longueur des champs"}), 400
     #ajout à la db
     cursor.execute("INSERT INTO messages (sender_id,receiver_id,subject,body) VALUES (%s,%s,%s,%s)", (sender_id,receiver_id,subject,body,))
