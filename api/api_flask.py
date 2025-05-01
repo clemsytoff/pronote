@@ -113,7 +113,7 @@ def add_homework():
     data = request.json
     title = data.get("title")
     description = data.get("description")
-    due_date = data.get("due_date")
+    due_date = data.get("due_date") #BUG AVEC LA DATE
     user_id = data.get("user_id")
     matiere_id = data.get("matiere_id")
 
