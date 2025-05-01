@@ -21,7 +21,7 @@ try:
         host="localhost",
         user="root",
         password="",
-        database="pronote"
+        database="pronote" #NE PAS OUBLIER DE CHANGER LES INFOS DE LA DB AVEC VOS PROPRES LOGINS
     )
 except Exception as e:
     print(f"[ERREUR] ❌ Connexion à la base de données impossible : {e}")
@@ -30,9 +30,6 @@ log("✅ Connexion à la base de données", "OK")
 log("✅ Connexion au front-end", "OK")
 
 try:
-    # Tentative de lancement de l'API
-    # Ici on simule un succès, tu peux lever une exception pour tester
-    # raise Exception("Port déjà utilisé")
     log("✅ API lancée", "OK")
 except Exception as e:
     print(f"[ERREUR] ❌ Lancement de l'API échoué : {e}")
@@ -44,10 +41,20 @@ try:
 except Exception as e:
     print(f"[ERREUR] ❌ Impossible de créer un curseur MySQL : {e}")
     exit()
+
+
+
+#route root
+@app.route("/", methods=["GET"])
+def root():
+ return jsonify({"message": "API Pronote lancee et fonctionnelle!"}), 200
+
+
+
 #---------------------------------------------------------------------------USERS------------------------------------------------------
 
 #créer un utilisateur
-@app.route("/api/v1/public/create_user", methods=["POST"])
+@app.route("/api/v1/public/auth/register", methods=["POST"])
 def create_user():
     data = request.json
     name = data.get("name")
@@ -101,7 +108,7 @@ def get_users():
 #---------------------------------------------------------------------------DEVOIRS------------------------------------------------------
 
 #creer un devoir
-@app.route("/api/v1/public/create_homework", methods=["POST"])
+@app.route("/api/v1/public/homeworks/create", methods=["POST"])
 def add_homework():
     data = request.json
     title = data.get("title")
@@ -125,7 +132,7 @@ def add_homework():
 
 
 #liste de tous les devoirs
-@app.route("/api/v1/public/homeworks", methods=["GET"])
+@app.route("/api/v1/public/homeworks/all", methods=["GET"])
 def get_homeworks():
     cursor.execute("""
 SELECT 
@@ -156,7 +163,7 @@ JOIN matieres ON devoirs.matiere_id = matieres.id;
     return jsonify(homeworks)
 
 # Liste des devoirs par matière
-@app.route("/api/v1/public/homeworks/<int:id>", methods=["GET"])
+@app.route("/api/v1/public/homeworks/list/<int:id>", methods=["GET"])
 def get_homeworks_by_matiere(id):
     cursor.execute("""
     SELECT 
@@ -184,7 +191,8 @@ def get_homeworks_by_matiere(id):
 
 
 
-# a ajouter : edit devoirs, suppr devoirs
+#ajouter modif devoirs
+
 
 
 
@@ -193,7 +201,7 @@ def get_homeworks_by_matiere(id):
 
 
 #ajout matière
-@app.route("/api/v1/admin/create_matiere", methods=["POST"])
+@app.route("/api/v1/admin/matieres/create", methods=["POST"])
 def create_matiere():
     data = request.json
     name = data.get("name")
@@ -213,7 +221,7 @@ def create_matiere():
 
 
 #suppression matière
-@app.route("/api/v1/admin/delete_matiere/<int:matiere_id>", methods=["DELETE"])
+@app.route("/api/v1/admin/matieres/delete/<int:matiere_id>", methods=["DELETE"])
 def delete_matiere(matiere_id):
     cursor.execute("DELETE FROM matieres WHERE id = %s", (matiere_id,))
     db.commit()
@@ -223,7 +231,7 @@ def delete_matiere(matiere_id):
 
 
 #liste matières
-@app.route("/api/v1/admin/list_matieres", methods=["GET"])
+@app.route("/api/v1/admin/matieres/all", methods=["GET"])
 def list_matieres():
     cursor.execute("""
 SELECT *
@@ -242,7 +250,16 @@ FROM matieres
     return jsonify(matieres)
 
 
-# à ajouter : edit matière
+#modifier une matière par son id ---- A FINIR
+@app.route("/api/v1/public/matieres/edit/<int:matiere_id>", methods=["PUT"])
+def update_matiere(matiere_id):
+    data = request.json
+    new_content = data.get("content")
+    if not new_content:
+        return jsonify({"error": "Content is required"}), 400
+    cursor.execute("UPDATE comments SET content = %s WHERE id = %s", (new_content, comment_id))
+    db.commit()
+    return jsonify({"message": "Comment updated successfully"})
 
 
 
@@ -253,7 +270,7 @@ FROM matieres
 
 #créer un message
 
-@app.route("/api/v1/public/create_message", methods=["POST"])
+@app.route("/api/v1/public/messages/create", methods=["POST"])
 def add_message():
     data = request.json
     sender_id = data.get("sender_id")
@@ -274,7 +291,7 @@ def add_message():
 
 
 #liste de tous les messages
-@app.route("/api/v1/admin/list_messages", methods=["GET"])
+@app.route("/api/v1/admin/messages/all", methods=["GET"])
 def list_messages():
     cursor.execute("""
 SELECT *
@@ -298,7 +315,7 @@ FROM messages
 
 
 #liste messages par envoyeur
-@app.route("/api/v1/admin/list_messages/<int:sender_id>", methods=["GET"])
+@app.route("/api/v1/admin/messages/sender/<int:sender_id>", methods=["GET"])
 def list_messages_by_sender(sender_id):
     cursor.execute("""
 SELECT *
@@ -325,7 +342,7 @@ WHERE sender_id = %s
 
 
 #liste messages par destinataire
-@app.route("/api/v1/admin/list_messages/<int:receiver_id>", methods=["GET"])
+@app.route("/api/v1/admin/messages/receiver/<int:receiver_id>", methods=["GET"])
 def list_messages_by_receiver(receiver_id):
     cursor.execute("""
 SELECT *
