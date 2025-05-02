@@ -42,6 +42,13 @@ except Exception as e:
     print(f"[ERREUR] ❌ Impossible de créer un curseur MySQL : {e}")
     exit()
 
+#verif du mdp compte admin
+cursor.execute("SELECT password FROM users WHERE name = %s", ("Admin",))
+data = cursor.fetchone()
+
+if data and data[0] == "Admin1234":
+    print("⚠️ CHANGEZ LE MOT DE PASSE DU COMPTE ADMINISTRATEUR SYSTEME IMMEDIATEMENT ! ⚠️")
+
 
 
 #route root
@@ -65,6 +72,10 @@ def create_user():
 
     if not name or not surname or not classe or not password:
         return jsonify({"error": "Veuillez remplir tous les champs"}), 400
+    
+    #verif admin
+    if name == "Admin" or surname == "Admin":
+        return jsonify({"error": "Impossible de créer un compte nommé 'Admin'"}), 400
     
     #verif longueurs
     if not 0<int(len(name))<=100 or not 0<int(len(surname))<=100 or not 0<int(len(classe))<=50 or not 0<len(password)<=255:
@@ -487,50 +498,50 @@ def delete_note(note_id):
 
 
 
+#---------------------------------------------------------------------------SYSTEME [NE PAS MODIFIER]------------------------------------------------------
+#la partie qui suis est une partie pour les développeurs, lors de l'utilisation professionnelle de Pronote Reimagined, pour le bon fonctionnement du systeme 
+# veuillez ne pas utiliser les routes suivantes sans faire de sauvegarde.
+
+#---------------------------------------------------------------------------GRADES------------------------------------------------------
+
+#ajouter un grade
+@app.route("/api/v1/dev/grades/create", methods=["POST"])
+def add_grade():
+    data = request.json
+    name = data.get("name")
+    if not name:
+        return jsonify({"error": "Veuillez remplir tous les champs"}), 400
+    if not 0<int(len(name))<=50:
+        return jsonify({"error": "Veuillez respecter la longueur des champs"}), 400
+    cursor.execute("INSERT INTO grades (grade_name) VALUES (%s)", (name,))
+    db.commit()
+    return jsonify({"message": "Grade créé avec succès"}), 201
+
+#supprimer un grade
+@app.route("/api/v1/dev/grades/delete/<int:grade_id>", methods=["DELETE"])
+def delete_grade(grade_id):
+    cursor.execute("DELETE FROM grades WHERE id = %s", (grade_id,))
+    db.commit()
+    return jsonify({"message": "Grade supprimé avec succès"})
+
+#liste des grades -- Fonction non dev
+@app.route("/api/v1/admin/grades/all", methods=["GET"])
+def get_grades():
+    cursor.execute("SELECT * FROM grades")
+    data = cursor.fetchall()
+    grades = [{"id": row[0], "name": row[1]} for row in data]
+    return jsonify(grades)
+
+#liste des grades par ID -- Fonction non dev
+@app.route("/api/v1/admin/grades/list/<int:grade_id>", methods=["GET"])
+def get_grades_by_id(grade_id):
+    cursor.execute("SELECT * FROM grades WHERE id = %s",(grade_id,))
+    data = cursor.fetchall()
+    grades = [{"id": row[0], "name": row[1]} for row in data]
+    return jsonify(grades)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#fin du programme
+#fin du programme -- NE SURTOUT PAS TOUCHER
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)

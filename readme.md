@@ -14,6 +14,8 @@ Bienvenue dans le projet Pronote Reimagined ! Ce projet vise à recréer l'appli
 - ⬜ Système agenda.
 - ⬜ Système vie scolaire.
 - ✅ Système de devoirs.
+- ✅ Compte administrateur généré de base
+- ✅ Grades générés de base
 
 ## Fonctionnalités API
 
@@ -40,6 +42,10 @@ Bienvenue dans le projet Pronote Reimagined ! Ce projet vise à recréer l'appli
 - ✅ Voir toutes les notes par matière
 - ✅ Voir toutes les notes par élève
 - ⬜ Modifier une note
+- ✅ Liste des grades
+- ✅ Liste des grades par ID
+- ✅ Créer un grade (Dev only)
+- ✅ Supprimer un grade (Dev only)
 
 ## Installation
 
