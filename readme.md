@@ -30,7 +30,7 @@ Bienvenue dans le projet Pronote Reimagined ! Ce projet vise à recréer l'appli
 - ✅ Ajout d'une matière
 - ✅ Suppression d'une matière
 - ✅ Liste des matières
-- ⬜ Édition d'une matière
+- ✅ Édition d'une matière
 - ✅ Création de message
 - ✅ Liste de tous les messages
 - ✅ Liste des messages par envoyeur

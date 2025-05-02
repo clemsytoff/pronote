@@ -280,16 +280,16 @@ FROM matieres
     return jsonify(matieres)
 
 
-#modifier une matière par son id ---- A FINIR
+#modifier une matière par son id
 @app.route("/api/v1/public/matieres/edit/<int:matiere_id>", methods=["PUT"])
 def update_matiere(matiere_id):
     data = request.json
-    new_content = data.get("content")
-    if not new_content:
-        return jsonify({"error": "Content is required"}), 400
-    cursor.execute("UPDATE comments SET content = %s WHERE id = %s", (new_content, comment_id))
+    new_name = data.get("name")
+    if not new_name:
+        return jsonify({"error": "Veuillez remplir tous les champs"}), 400
+    cursor.execute("UPDATE matieres SET name = %s WHERE id = %s", (new_name, matiere_id))
     db.commit()
-    return jsonify({"message": "Comment updated successfully"})
+    return jsonify({"message": "Matière modifiée avec succès"})
 
 
 
