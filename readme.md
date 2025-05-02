@@ -35,6 +35,11 @@ Bienvenue dans le projet Pronote Reimagined ! Ce projet vise à recréer l'appli
 - ✅ Liste de tous les messages
 - ✅ Liste des messages par envoyeur
 - ✅ Liste des messages par destinataire
+- ✅ Ajouter une note
+- ✅ Supprimer une note
+- ✅ Voir toutes les notes par matière
+- ✅ Voir toutes les notes par élève
+- ⬜ Modifier une note
 
 ## Installation
 
