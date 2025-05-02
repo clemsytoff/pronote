@@ -98,6 +98,7 @@ def get_users():
     return jsonify(users)
 
 
+#supprimer un utilisateur
 @app.route("/api/v1/admin/users/delete/<int:user_id>", methods=["DELETE"])
 def delete_cuser(user_id):
     cursor.execute("DELETE FROM users WHERE id = %s", (user_id,))
@@ -105,7 +106,30 @@ def delete_cuser(user_id):
     return jsonify({"message": "Utilisateur supprimé avec succès"})
 
 
-# a ajouter : edit user, suppr user, liste user par id
+#liste utilisateurs par id
+@app.route("/api/v1/admin/users/<int:user_id>", methods=["GET"])
+def get_users_by_id(user_id):
+    cursor.execute("SELECT * FROM users WHERE id = %s",(user_id,))
+    data = cursor.fetchall()
+
+    users = [
+        {
+            "id": row[0],
+            "name": row[1],
+            "surname": row[2],
+            "classe": row[3],
+            "account_creation": row[5],
+            "grade": row[6]
+        }
+        for row in data
+    ]
+
+    return jsonify(users)
+
+
+
+
+# a ajouter : edit user
 
 
 

@@ -19,9 +19,9 @@ Bienvenue dans le projet Pronote Reimagined ! Ce projet vise à recréer l'appli
 
 - ✅ Création d'utilisateur
 - ⬜ Édition d'utilisateur
-- ⬜ Suppression d'utilisateur
+- ✅ Suppression d'utilisateur
 - ✅ Liste des utilisateurs
-- ⬜ Liste d'un utilisateur par ID
+- ✅ Liste d'un utilisateur par ID
 - ✅ Création de devoirs
 - ✅ Liste de tous les devoirs
 - ✅ Liste des devoirs par matière
