@@ -7,15 +7,28 @@ import time
 app = Flask(__name__)
 CORS(app)
 
+#définition des fonctions systeme
 def log(msg, status="..."):
     print(f"[LOG] {msg} {status}")
     time.sleep(2)
 
+def sys_logs(message):
+    with open("logs.txt", "a", encoding="utf-8") as f:
+        from datetime import datetime
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        f.write(f"[{timestamp}] {message}\n")
+#LOGS A FINIR POUR TOUTES LES ROUTES
+
+#début du programme
+
 print("⏳ Lancement du serveur...")
+sys_logs("⏳ Lancement du serveur...")
 time.sleep(3)
 log("✅ Téléchargement de la dernière version", "OK")
+sys_logs("✅ Téléchargement de la dernière version OK")
 
 print("⚙️  Configuration de la base de données en cours...")
+sys_logs("⚙️  Configuration de la base de données en cours...")
 try:
     db = mysql.connector.connect(
         host="localhost",
@@ -25,21 +38,28 @@ try:
     )
 except Exception as e:
     print(f"[ERREUR] ❌ Connexion à la base de données impossible : {e}")
+    sys_logs(f"[ERREUR] ❌ Connexion à la base de données impossible : {e}")
     exit()
 log("✅ Connexion à la base de données", "OK")
+sys_logs("✅ Connexion à la base de données OK")
 log("✅ Connexion au front-end", "OK")
+sys_logs("✅ Connexion au front-end OK")
 
 try:
     log("✅ API lancée", "OK")
+    sys_logs("✅ API lancée OK")
 except Exception as e:
     print(f"[ERREUR] ❌ Lancement de l'API échoué : {e}")
+    sys_logs(f"[ERREUR] ❌ Lancement de l'API échoué : {e}")
     exit()
 
 try:
     cursor = db.cursor()
     print("🚀 Serveur lancé avec succès !")
+    sys_logs("🚀 Serveur lancé avec succès !")
 except Exception as e:
     print(f"[ERREUR] ❌ Impossible de créer un curseur MySQL : {e}")
+    sys_logs(f"[ERREUR] ❌ Impossible de créer un curseur MySQL : {e}")
     exit()
 
 #verif du mdp compte admin
@@ -47,13 +67,16 @@ cursor.execute("SELECT password FROM users WHERE name = %s", ("Admin",))
 data = cursor.fetchone()
 
 if data and data[0] == "Admin1234":
-    print("⚠️ CHANGEZ LE MOT DE PASSE DU COMPTE ADMINISTRATEUR SYSTEME IMMEDIATEMENT ! ⚠️")
-
+    print("\033[91m" + "="*60)
+    print("⚠️  ATTENTION : CHANGEZ LE MOT DE PASSE DU COMPTE ADMINISTRATEUR SYSTEME IMMEDIATEMENT ! ⚠️")
+    print("="*60 + "\033[0m")
+    sys_logs("⚠️  CHANGEZ LE MOT DE PASSE DU COMPTE ADMINISTRATEUR SYSTEME IMMEDIATEMENT ! ⚠️")
 
 
 #route root
 @app.route("/", methods=["GET"])
 def root():
+ sys_logs("Route '/' 200 OK")
  return jsonify({"message": "API Pronote lancee et fonctionnelle!"}), 200
 
 
@@ -515,6 +538,12 @@ def add_grade():
         return jsonify({"error": "Veuillez respecter la longueur des champs"}), 400
     cursor.execute("INSERT INTO grades (grade_name) VALUES (%s)", (name,))
     db.commit()
+
+    print("\033[91m" + "="*60)
+    print("⚠️  ATTENTION : Route de développement utilisée ! Ne pas utiliser en production. ⚠️")
+    print("="*60 + "\033[0m")
+    sys_logs("⚠️  ATTENTION : Route de développement '/api/v1/dev/grades/create' utilisée ! Ne pas utiliser en production. ⚠️")
+
     return jsonify({"message": "Grade créé avec succès"}), 201
 
 #supprimer un grade
@@ -522,6 +551,11 @@ def add_grade():
 def delete_grade(grade_id):
     cursor.execute("DELETE FROM grades WHERE id = %s", (grade_id,))
     db.commit()
+
+    print("\033[91m" + "="*60)
+    print("⚠️  ATTENTION : Route de développement '/api/v1/dev/grades/delete/<int:grade_id>' utilisée ! Ne pas utiliser en production. ⚠️")
+    print("="*60 + "\033[0m")
+
     return jsonify({"message": "Grade supprimé avec succès"})
 
 #liste des grades -- Fonction non dev
