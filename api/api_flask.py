@@ -73,11 +73,12 @@ if data and data[0] == "Admin1234":
     sys_logs("⚠️  CHANGEZ LE MOT DE PASSE DU COMPTE ADMINISTRATEUR SYSTEME IMMEDIATEMENT ! ⚠️")
 
 
-#route root
 @app.route("/", methods=["GET"])
 def root():
- sys_logs("Route '/' 200 OK")
- return jsonify({"message": "API Pronote lancee et fonctionnelle!"}), 200
+    ip = request.remote_addr
+    sys_logs(f"[IP: {ip}] Route '/' 200 OK")
+    return jsonify({"message": "API Pronote lancée et fonctionnelle!"}), 200
+
 
 
 
@@ -94,14 +95,20 @@ def create_user():
     #vérifications
 
     if not name or not surname or not classe or not password:
+        ip = request.remote_addr
+        sys_logs(f"[IP: {ip}] Route '/api/v1/public/auth/register' 400 VALUES ERROR")
         return jsonify({"error": "Veuillez remplir tous les champs"}), 400
     
     #verif admin
     if name == "Admin" or surname == "Admin":
+        ip = request.remote_addr
+        sys_logs(f"[IP: {ip}] Route '/api/v1/public/auth/register' 400 VALUES ERROR")
         return jsonify({"error": "Impossible de créer un compte nommé 'Admin'"}), 400
     
     #verif longueurs
     if not 0<int(len(name))<=100 or not 0<int(len(surname))<=100 or not 0<int(len(classe))<=50 or not 0<len(password)<=255:
+        ip = request.remote_addr
+        sys_logs(f"[IP: {ip}] Route '/api/v1/public/auth/register' 400 VALUES ERROR")
         return jsonify({"error": "Veuillez respecter la longueur de chaque champ"}), 400
     
     #hash du mdp
@@ -109,6 +116,8 @@ def create_user():
     #ajout à la db
     cursor.execute("INSERT INTO users (name,surname,classe,password,grade) VALUES (%s,%s,%s,%s,%s)", (name,surname,classe,hashed_password,0,)) #on met le grade à 0 (élève)
     db.commit()
+    ip = request.remote_addr
+    sys_logs(f"[IP: {ip}] Route '/api/v1/public/auth/register' 201 OK")
     return jsonify({"message": "Utilisateur créé avec succès"}), 201
 
 #liste utilisateurs
@@ -128,7 +137,8 @@ def get_users():
         }
         for row in data
     ]
-
+    ip = request.remote_addr
+    sys_logs(f"[IP: {ip}] Route '/api/v1/admin/users' OK")
     return jsonify(users)
 
 
@@ -137,6 +147,8 @@ def get_users():
 def delete_cuser(user_id):
     cursor.execute("DELETE FROM users WHERE id = %s", (user_id,))
     db.commit()
+    ip = request.remote_addr
+    sys_logs(f"[IP: {ip}] Route '/api/v1/admin/users/delete/<int:user_id>' OK")
     return jsonify({"message": "Utilisateur supprimé avec succès"})
 
 
@@ -157,7 +169,8 @@ def get_users_by_id(user_id):
         }
         for row in data
     ]
-
+    ip = request.remote_addr
+    sys_logs(f"[IP: {ip}] Route '/api/v1/admin/users/<int:user_id>' OK")
     return jsonify(users)
 
 
@@ -183,14 +196,20 @@ def add_homework():
 
     #verifs
     if not title or not description or not due_date or not user_id or not matiere_id:
+        ip = request.remote_addr
+        sys_logs(f"[IP: {ip}] Route '/api/v1/prof/homeworks/create' 400 VALUES ERROR")
         return jsonify({"error": "Veuillez remplir tous les champs"}), 400
     #verif de longueur
     if not 0<int(len(title))<=255:
+        ip = request.remote_addr
+        sys_logs(f"[IP: {ip}] Route '/api/v1/prof/homeworks/create' 400 VALUES ERROR")
         return jsonify({"error": "Veuillez respecter la taille des champs"}), 400
     
     #ajout à la db
     cursor.execute("INSERT INTO devoirs (title,description,due_date,user_id,matiere_id) VALUES (%s,%s,%s,%s,%s)", (title,description,due_date,user_id,matiere_id,))
     db.commit()
+    ip = request.remote_addr
+    sys_logs(f"[IP: {ip}] Route '/api/v1/prof/homeworks/create' 201 OK")
     return jsonify({"message": "Devoirs ajouté avec succès"}), 201
 
 
@@ -223,7 +242,8 @@ JOIN matieres ON devoirs.matiere_id = matieres.id;
         }
         for row in data
     ]
-
+    ip = request.remote_addr
+    sys_logs(f"[IP: {ip}] Route '/api/v1/prof/homeworks/all' OK")
     return jsonify(homeworks)
 
 # Liste des devoirs par matière
@@ -251,6 +271,8 @@ def get_homeworks_by_matiere(id):
         "prof_surname": row[4],
         "matiere": row[5]
     } for row in data]
+    ip = request.remote_addr
+    sys_logs(f"[IP: {ip}] Route '/api/v1/prof/homeworks/list/<int:id>' OK")
     return jsonify(homeworks)
 
 
@@ -272,14 +294,20 @@ def create_matiere():
     #vérifications
 
     if not name:
+        ip = request.remote_addr
+        sys_logs(f"[IP: {ip}] Route '/api/v1/admin/matieres/create' 400 VALUES ERROR")
         return jsonify({"error": "Veuillez remplir tous les champs"}), 400
     #verif longueurs
     if not 0<int(len(name))<=100:
+        ip = request.remote_addr
+        sys_logs(f"[IP: {ip}] Route '/api/v1/admin/matieres/create' 400 VALUES ERROR")
         return jsonify({"error": "Veuillez respecter la longueur de chaque champ"}), 400
     
     #ajout à la db
     cursor.execute("INSERT INTO matieres (name) VALUES (%s)", (name,))
     db.commit()
+    ip = request.remote_addr
+    sys_logs(f"[IP: {ip}] Route '/api/v1/admin/matieres/create' 201 OK")
     return jsonify({"message": "Matière créée avec succès"}), 201
 
 
@@ -289,6 +317,8 @@ def create_matiere():
 def delete_matiere(matiere_id):
     cursor.execute("DELETE FROM matieres WHERE id = %s", (matiere_id,))
     db.commit()
+    ip = request.remote_addr
+    sys_logs(f"[IP: {ip}] Route '/api/v1/admin/matieres/delete/<int:matiere_id>' OK")
     return jsonify({"message": "Matière supprimée avec succès"})
 
 
@@ -310,7 +340,8 @@ FROM matieres
         }
         for row in data
     ]
-
+    ip = request.remote_addr
+    sys_logs(f"[IP: {ip}] Route '/api/v1/admin/matieres/all' OK")
     return jsonify(matieres)
 
 
@@ -320,9 +351,13 @@ def update_matiere(matiere_id):
     data = request.json
     new_name = data.get("name")
     if not new_name:
+        ip = request.remote_addr
+        sys_logs(f"[IP: {ip}] Route '/api/v1/public/matieres/edit/<int:matiere_id>' 400 VALUES ERROR")
         return jsonify({"error": "Veuillez remplir tous les champs"}), 400
     cursor.execute("UPDATE matieres SET name = %s WHERE id = %s", (new_name, matiere_id))
     db.commit()
+    ip = request.remote_addr
+    sys_logs(f"[IP: {ip}] Route '/api/v1/public/matieres/edit/<int:matiere_id>' OK")
     return jsonify({"message": "Matière modifiée avec succès"})
 
 
@@ -344,13 +379,19 @@ def add_message():
     
     #verifs
     if not sender_id or not receiver_id or not subject or not body:
+        ip = request.remote_addr
+        sys_logs(f"[IP: {ip}] Route '/api/v1/public/messages/create' 400 VALUES ERROR")
         return jsonify({"error": "Veuillez remplir tous les champs"}), 400
     #verif longueur
     if not 0<int(len(subject))<=255:
+        ip = request.remote_addr
+        sys_logs(f"[IP: {ip}] Route '/api/v1/public/messages/create' 400 VALUES ERROR")
         return jsonify({"error": "Veuillez respecter la longueur des champs"}), 400
     #ajout à la db
     cursor.execute("INSERT INTO messages (sender_id,receiver_id,subject,body) VALUES (%s,%s,%s,%s)", (sender_id,receiver_id,subject,body,))
     db.commit()
+    ip = request.remote_addr
+    sys_logs(f"[IP: {ip}] Route '/api/v1/public/messages/create' 201 OK")
     return jsonify({"message": "Message créé (envoyé) avec succès"}), 201
 
 
@@ -374,7 +415,8 @@ FROM messages
         }
         for row in data
     ]
-
+    ip = request.remote_addr
+    sys_logs(f"[IP: {ip}] Route '/api/v1/admin/messages/all' OK")
     return jsonify(messages)
 
 
@@ -399,7 +441,8 @@ WHERE sender_id = %s
         }
         for row in data
     ]
-
+    ip = request.remote_addr
+    sys_logs(f"[IP: {ip}] Route '/api/v1/admin/messages/sender/<int:sender_id>' OK")
     return jsonify(messages)
 
 
@@ -426,7 +469,8 @@ WHERE receiver_id = %s
         }
         for row in data
     ]
-
+    ip = request.remote_addr
+    sys_logs(f"[IP: {ip}] Route '/api/v1/admin/messages/receiver/<int:receiver_id>' OK")
     return jsonify(messages)
 
 
@@ -448,16 +492,24 @@ def add_note():
 
     #verifs
     if not user_id or not matiere_id or not note_value or not note_name:
+        ip = request.remote_addr
+        sys_logs(f"[IP: {ip}] Route '/api/v1/prof/notes/create' 400 VALUES ERROR")
         return jsonify({"error": "Veuillez remplir tous les champs"}), 400
     #verif longueurs
     if not 0<int(len(note_name))<=100:
+        ip = request.remote_addr
+        sys_logs(f"[IP: {ip}] Route '/api/v1/prof/notes/create' 400 VALUES ERROR")
         return jsonify({"error": "Veuillez respecter la longueur des champs"}), 400
     if not 0<=note_value<=20: #on prend en charge que les notes / 20
+        ip = request.remote_addr
+        sys_logs(f"[IP: {ip}] Route '/api/v1/prof/notes/create' 400 VALUES ERROR")
         return jsonify({"error": "La note doit être comprise en 0 et 20"}), 400
 
     #ajout à la db
     cursor.execute("INSERT INTO notes (user_id,matiere_id,note_value,note_name) VALUES (%s,%s,%s,%s)", (user_id,matiere_id,note_value,note_name,))
     db.commit()
+    ip = request.remote_addr
+    sys_logs(f"[IP: {ip}] Route '/api/v1/prof/notes/create' 201 OK")
     return jsonify({"message": "Note ajoutée avec succès"}), 201
 
 
@@ -468,6 +520,8 @@ def get_notes():
     cursor.execute("SELECT * FROM notes")
     data = cursor.fetchall()
     notes = [{"id": row[0], "user_id": row[1], "note_name": row[2], "matiere_id": row[3], "note_value": row[4], "note_date": row[5]} for row in data]
+    ip = request.remote_addr
+    sys_logs(f"[IP: {ip}] Route '/api/v1/prof/notes/all' OK")
     return jsonify(notes)
 
 
@@ -477,6 +531,8 @@ def get_notes_by_id_user(user_id):
     cursor.execute("SELECT * FROM notes WHERE user_id = %s", (user_id,))
     data = cursor.fetchall()
     notes = [{"id": row[0], "user_id": row[1], "note_name": row[2], "matiere_id": row[3], "note_value": row[4], "note_date": row[5]} for row in data]
+    ip = request.remote_addr
+    sys_logs(f"[IP: {ip}] Route '/api/v1/prof/notes/user/<int:user_id>' OK")
     return jsonify(notes)
 
 #list notes par matiere
@@ -485,12 +541,16 @@ def get_notes_by_id_matiere(matiere_id):
     cursor.execute("SELECT * FROM notes WHERE matiere_id = %s", (matiere_id,))
     data = cursor.fetchall()
     notes = [{"id": row[0], "user_id": row[1], "note_name": row[2], "matiere_id": row[3], "note_value": row[4], "note_date": row[5]} for row in data]
+    ip = request.remote_addr
+    sys_logs(f"[IP: {ip}] Route '/api/v1/prof/notes/matiere/<int:matiere_id>' OK")
     return jsonify(notes)
 
 @app.route("/api/v1/prof/notes/delete/<int:note_id>", methods=["DELETE"])
 def delete_note(note_id):
     cursor.execute("DELETE FROM notes WHERE id = %s", (note_id,))
     db.commit()
+    ip = request.remote_addr
+    sys_logs(f"[IP: {ip}] Route '/api/v1/prof/notes/delete/<int:note_id>' OK")
     return jsonify({"message": "Note supprimée avec succès"})
 
 #a faire : edit note
@@ -555,6 +615,9 @@ def delete_grade(grade_id):
     print("\033[91m" + "="*60)
     print("⚠️  ATTENTION : Route de développement '/api/v1/dev/grades/delete/<int:grade_id>' utilisée ! Ne pas utiliser en production. ⚠️")
     print("="*60 + "\033[0m")
+    ip = request.remote_addr
+    sys_logs(f"[IP: {ip}] ⚠️  ATTENTION : Route de développement '/api/v1/dev/grades/delete/<int:grade_id>' utilisée ! Ne pas utiliser en production. ⚠️")
+    sys_logs(f"[IP: {ip}] Route '/api/v1/dev/grades/delete/<int:grade_id>' OK")
 
     return jsonify({"message": "Grade supprimé avec succès"})
 
@@ -564,6 +627,8 @@ def get_grades():
     cursor.execute("SELECT * FROM grades")
     data = cursor.fetchall()
     grades = [{"id": row[0], "name": row[1]} for row in data]
+    ip = request.remote_addr
+    sys_logs(f"[IP: {ip}] Route '/api/v1/admin/grades/all' OK")
     return jsonify(grades)
 
 #liste des grades par ID -- Fonction non dev
@@ -572,6 +637,8 @@ def get_grades_by_id(grade_id):
     cursor.execute("SELECT * FROM grades WHERE id = %s",(grade_id,))
     data = cursor.fetchall()
     grades = [{"id": row[0], "name": row[1]} for row in data]
+    ip = request.remote_addr
+    sys_logs(f"[IP: {ip}] Route '/api/v1/admin/grades/list/<int:grade_id>' OK")
     return jsonify(grades)
 
 
