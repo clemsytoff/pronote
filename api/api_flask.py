@@ -4,6 +4,18 @@ import bcrypt
 from flask_cors import CORS
 import time
 
+
+
+#Ajout d'une verification de la co à la db chaque 10 sec
+#from contextlib import contextmanager
+#@contextmanager
+#def get_cursor():
+#    cursor = db.cursor(buffered=True)
+#    try:
+#        yield cursor
+#    finally:
+#        cursor.close()
+
 app = Flask(__name__)
 CORS(app)
 
@@ -114,7 +126,7 @@ def create_user():
     #hash du mdp
     hashed_password=bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     #ajout à la db
-    cursor.execute("INSERT INTO users (name,surname,classe,password,grade) VALUES (%s,%s,%s,%s,%s)", (name,surname,classe,hashed_password,0,)) #on met le grade à 0 (élève)
+    cursor.execute("INSERT INTO users (name,surname,class_name,password,grade_id) VALUES (%s,%s,%s,%s,%s)", (name,surname,classe,hashed_password,1,)) #on met le grade à 1 (élève)
     db.commit()
     ip = request.remote_addr
     sys_logs(f"[IP: {ip}] Route '/api/v1/public/auth/register' 201 OK")
